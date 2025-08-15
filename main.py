@@ -11,6 +11,22 @@ ann = keras.models.load_model("ann.keras")
 le_gender = joblib.load("label_encoder_gender.pkl") 
 ct_geo = joblib.load("column_transformer_geo.pkl")
 
+from fastapi.responses import HTMLResponse
+
+@app.get("/")
+def home():
+    return HTMLResponse("""
+    <html>
+        <body>
+            <h2>Upload CSV for Prediction</h2>
+            <form action="/predict_csv" method="post" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <input type="submit" value="Upload">
+            </form>
+        </body>
+    </html>
+    """)
+
 @app.post("/predict_csv")
 async def predict_csv(file: UploadFile = File(...)):
     contents = await file.read()
