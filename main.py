@@ -20,9 +20,28 @@ def home():
         <body>
             <h2>Upload CSV for Prediction</h2>
             <form action="/predict_csv" method="post" enctype="multipart/form-data">
-                <input type="file" name="file">
+                <input type="file" name="file" accept=".csv">
                 <input type="submit" value="Upload">
             </form>
+            <h3>Expected CSV Format</h3>
+            <table border="1" cellpadding="5" cellspacing="0">
+                <tr><th>Column Name</th><th>Data Type</th></tr>
+                <tr><td>RowNumber</td><td>int64</td></tr>
+                <tr><td>CustomerId</td><td>int64</td></tr>
+                <tr><td>Surname</td><td>object (string)</td></tr>
+                <tr><td>CreditScore</td><td>int64</td></tr>
+                <tr><td>Geography</td><td>object (string)</td></tr>
+                <tr><td>Gender</td><td>object (string: Male/Female)</td></tr>
+                <tr><td>Age</td><td>int64</td></tr>
+                <tr><td>Tenure</td><td>int64</td></tr>
+                <tr><td>Balance</td><td>float64</td></tr>
+                <tr><td>NumOfProducts</td><td>int64</td></tr>
+                <tr><td>HasCrCard</td><td>int64 (0 or 1)</td></tr>
+                <tr><td>IsActiveMember</td><td>int64 (0 or 1)</td></tr>
+                <tr><td>EstimatedSalary</td><td>float64</td></tr>
+                <tr><td>Exited</td><td>int64 (Target column: 0 or 1)</td></tr>
+            </table>
+            <p><b>Note:</b> Ensure the CSV has all the above columns in the same format.</p>
         </body>
     </html>
     """)
