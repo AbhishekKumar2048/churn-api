@@ -10,7 +10,7 @@ ann = keras.models.load_model("ann.keras")
 # Load preprocessing objects 
 le_gender = joblib.load("label_encoder_gender.pkl") 
 ct_geo = joblib.load("column_transformer_geo.pkl")
-
+sc = joblib.load("scaler.pkl")
 from fastapi.responses import HTMLResponse
 
 @app.get("/")
@@ -40,7 +40,7 @@ async def predict_csv(file: UploadFile = File(...)):
 
     # One-hot encode Geography using the trained column transformer
     X = ct_geo.transform(X)
-
+    X = sc.transform(X)
     # Convert to numpy float32
     X = np.array(X, dtype=np.float32)
 
