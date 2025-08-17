@@ -46,21 +46,22 @@ def home():
     </html>
     """)
 
+from fastapi.responses import HTMLResponse
+
 @app.post("/predict_csv")
 async def predict_csv(file: UploadFile = File(...)):
     contents = await file.read()
     df = pd.read_csv(io.BytesIO(contents))
 
     # Select same features as in training
-    X = df.iloc[:, 3:-1].copy()  # Keep as DataFrame
+    X = df.iloc[:, 3:-1].copy()
 
     # Encode Gender
     X["Gender"] = le_gender.transform(X["Gender"])
 
-    # One-hot encode Geography using the trained column transformer
+    # One-hot encode Geography
     X = ct_geo.transform(X)
     X = sc.transform(X)
-    # Convert to numpy float32
     X = np.array(X, dtype=np.float32)
 
     # Predict
@@ -70,5 +71,28 @@ async def predict_csv(file: UploadFile = File(...)):
     # Append predictions
     df["churn_prediction"] = predictions
     df["churn_probability"] = probabilities
+    df["Result"] = df["churn_prediction"].apply(
+        lambda x: "✅ The Customer is NOT expected to leave" if x == 0 
+                  else "⚠️ The Customer is expected to leave"
+    )
 
-    return df.to_dict(orient="records")
+    # Convert to HTML table
+    html_table = df.to_html(classes="table table-bordered", index=False)
+
+    return HTMLResponse(content=f"""
+    <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                .table {{ border-collapse: collapse; width: 100%; }}
+                .table th, .table td {{ border: 1px solid #ddd; padding: 8px; }}
+                .table th {{ background-color: #f2f2f2; }}
+            </style>
+        </head>
+        <body>
+            <h2>Prediction Results</h2>
+            {html_table}
+        </body>
+    </html>
+    """)
+
